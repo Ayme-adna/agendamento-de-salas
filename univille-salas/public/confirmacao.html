@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Confirmação</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <main>
+    <div class="ok">
+      <div style="font-size:40px">✅</div>
+      <h1>Tudo certo. A sala é de vocês!</h1>
+      <p class="mu">Sua reserva foi confirmada. Agora é só reunir o grupo e trazer suas ideias.</p>
+    </div>
+    <div class="card">
+      <div class="row">
+        <div><small>COMPROVANTE DE RESERVA</small>
+          <h3 id="cod"></h3>
+        </div>
+        <div style="text-align:right"><span class="tag">Reserva confirmada</span> <a href="#" onclick="print()">⭳ Baixar
+            comprovante</a></div>
+      </div>
+      <hr>
+      <div class="duas" style="grid-template-columns:1fr 2fr">
+        <div><img class="foto" id="img" alt="">
+          <h3 id="sala"></h3><small>Estudo em grupo • até <span id="cap"></span> pessoas</small>
+        </div>
+        <div>
+          <p>📅 <b id="d"></b></p>
+          <p>🕑 <b id="h"></b></p>
+          <p>📍 <b id="loc"></b></p>
+          <p>👥 <b id="pes"></b> pessoas</p>
+          <hr><small>Responsável pela reserva</small><br><b id="resp"></b><br><small id="fin"></small>
+        </div>
+      </div>
+      <p style="background:var(--g);color:#fff;padding:12px;border-radius:8px">Na chegada, apresente sua carteirinha na
+        recepção da biblioteca. Sua sala estará disponível às <span id="h2"></span>h.</p>
+    </div>
+    <p class="ok"><a class="btn" href="/minhas-reservas.html">Ver minhas reservas</a> <a class="btn out"
+        href="/salas.html">Nova reserva</a></p>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    (async () => {
+      const u = await header('b'), r = await api('/api/reservas/' + qs.get('codigo'));
+      cod.textContent = r.Codigo; img.src = '/img/' + r.Imagem; sala.textContent = 'Sala ' + r.Sala; cap.textContent = r.Capacidade;
+      d.textContent = dataLonga(r.Data); h.textContent = `${r.HoraInicio}:00 às ${r.HoraInicio + 2}:00`; h2.textContent = r.HoraInicio;
+      loc.textContent = `Bloco ${r.Bloco} • ${r.Andar}º andar • ${r.Campus}`; pes.textContent = r.Pessoas; resp.textContent = `${u.nome} • ${u.identificador}`; fin.textContent = r.Finalidade;
+    })();
+  </script>
+</body>
+
+</html>

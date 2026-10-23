@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Buscar salas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <main>
+    <small>ESPAÇOS DE ESTUDO</small>
+    <h1>Encontre seu próximo espaço de ideias.</h1>
+    <form class="card" id="f">
+      <div class="row">
+        <div style="flex:2"><label>Sala ou recurso</label><input id="busca"
+            placeholder="Busque por nome ou recurso"></div>
+        <div><label>Campus</label><select id="campus">
+            <option>Campus Principal</option>
+          </select></div>
+      </div>
+      <div class="row">
+        <div><label>Data</label><input type="date" id="data" required></div>
+        <div><label>Horário</label><select id="hora">
+            <option value="10">10:00</option>
+            <option value="12">12:00</option>
+            <option value="14" selected>14:00</option>
+            <option value="16">16:00</option>
+          </select></div>
+        <div><label>Pessoas</label><input type="number" id="pessoas" min="1" value="4"></div>
+        <div><label><input type="checkbox" id="so" checked> Só salas disponíveis</label></div>
+        <div><button class="btn full">Buscar salas</button></div>
+      </div>
+    </form>
+    <h3 id="tit"></h3>
+    <div class="grid3" id="lista"></div>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    header('b');
+    data.value = data.min = hoje;
+    async function buscar(e) {
+      e && e.preventDefault();
+      const p = new URLSearchParams({ data: data.value, hora: hora.value, pessoas: pessoas.value, busca: busca.value, campus: campus.value, so: so.checked ? 1 : 0 });
+      const l = await api('/api/salas?' + p);
+      tit.textContent = `${l.length} sala(s) • ${data.value.split('-').reverse().join('/')} • ${hora.value}h às ${+hora.value + 2}h`;
+      lista.innerHTML = l.map(s => `<div class="card"><img class="foto" src="/img/${s.Imagem}" alt="">
+    <h3>Sala ${s.Codigo}</h3><p class="mu">Bloco ${s.Bloco} • ${s.Andar}º andar<br>Até ${s.Capacidade} pessoas<br>${s.Recursos}</p>
+    <span class="tag">${s.Disponivel ? 'Disponível' : 'Ocupada'}</span> <b style="float:right">${hora.value}h – ${+hora.value + 2}h</b><br><br>
+    ${s.Disponivel ? `<a class="btn full" href="/sala.html?${new URLSearchParams({ id: s.Id, data: data.value, hora: hora.value, pessoas: pessoas.value })}">Ver detalhes</a>` : ''}</div>`).join('') || '<p>Nenhuma sala encontrada.</p>';
+    }
+    f.onsubmit = buscar; buscar();
+  </script>
+</body>
+
+</html>

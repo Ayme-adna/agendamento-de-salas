@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserva</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <main>
+    <small id="mig"></small>
+    <h1>Prepare seu próximo encontro de estudo.</h1>
+    <div class="duas">
+      <div>
+        <div class="card">
+          <h3>Quando vamos estudar?</h3>
+          <div class="row"><b id="mesTxt" style="flex:3"></b><button class="btn out"
+              onclick="mudaMes(-1)">‹</button><button class="btn out" onclick="mudaMes(1)">›</button></div><br>
+          <div class="cal">
+            <small>SEG</small><small>TER</small><small>QUA</small><small>QUI</small><small>SEX</small><small>SÁB</small><small>DOM</small>
+          </div>
+          <div class="cal" id="dias"></div><br>
+          <b id="diaTxt"></b>
+          <p class="mu">Períodos de 2 horas • Horário de Brasília</p>
+          <div class="slots" id="slots"></div>
+        </div>
+        <div class="card">
+          <h3>Conte um pouco sobre seu grupo</h3>
+          <div class="row">
+            <div><label>Pessoas</label><input type="number" id="pessoas" min="1" oninput="resumo()"></div>
+            <div style="flex:3"><label>Finalidade do encontro</label><input id="fin" value="Trabalho em grupo"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Resumo da sua reserva</h3><b id="sSala"></b><br><small id="sLoc"></small>
+        <hr>
+        <p>📅 <b id="sData"></b></p>
+        <p>🕑 <b id="sHora"></b></p>
+        <p>👥 <b id="sPes"></b></p>
+        <p class="tag" style="display:block;padding:10px">Reserva universitária — <b>Gratuita</b></p>
+        <label style="font-weight:400"><input type="checkbox" id="ck"> Li e concordo com as regras de uso. Sei que devo
+          chegar em até 15 minutos após o início.</label><br>
+        <button class="btn full" onclick="confirmar()">✓ Confirmar reserva</button>
+        <div class="erro" id="erro"></div>
+        <p style="text-align:center"><a id="volta">Voltar aos detalhes da sala</a></p>
+      </div>
+    </div>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    header('b');
+    const id = qs.get('id'); let sala, data = qs.get('data') || hoje, hora = +qs.get('hora') || 14, mes = new Date(data + 'T12:00');
+    function cal() {
+      const y = mes.getFullYear(), m = mes.getMonth(), ini = (new Date(y, m, 1).getDay() + 6) % 7, n = new Date(y, m + 1, 0).getDate(); let h = '<span></span>'.repeat(ini);
+      for (let i = 1; i <= n; i++) {
+        const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        h += `<button class="dia ${iso == data ? 'sel' : ''}" ${iso < hoje ? 'disabled' : ''} onclick="data='${iso}';cal();slots();resumo()">${i}</button>`
+      }
+      dias.innerHTML = h; mesTxt.textContent = mes.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+    }
+    function mudaMes(n) { mes = new Date(mes.getFullYear(), mes.getMonth() + n, 1, 12); cal() }
+    async function slots() {
+      diaTxt.textContent = dataLonga(data);
+      const { ocupados } = await api(`/api/salas/${id}/disponibilidade?data=${data}`);
+      slotsEl = document.getElementById('slots');
+      slotsEl.innerHTML = [10, 12, 14, 16].map(x => {
+        const oc = ocupados.includes(x);
+        return `<button class="slot ${x == hora && !oc ? 'sel' : ''}" ${oc ? 'disabled' : ''} onclick="hora=${x};slots();resumo()">${x}:00 – ${x + 2}:00<br><small>${oc ? 'Indisponível' : x == hora ? 'Selecionado' : 'Disponível'}</small></button>`
+      }).join('');
+    }
+    function resumo() { sData.textContent = data.split('-').reverse().join('/'); sHora.textContent = `${hora}:00 às ${hora + 2}:00 (2 horas)`; sPes.textContent = `${pessoas.value} participantes (até ${sala.Capacidade})` }
+    async function confirmar() {
+      erro.textContent = '';
+      if (!ck.checked) return erro.textContent = 'Aceite as regras de uso para continuar.';
+      try { const r = await api('/api/reservas', { method: 'POST', body: { salaId: +id, data, hora, pessoas: +pessoas.value, finalidade: fin.value } }); location = '/confirmacao.html?codigo=' + r.codigo }
+      catch (x) { erro.textContent = x.erro || 'Erro ao reservar.' }
+    }
+    (async () => {
+      sala = await api('/api/salas/' + id);
+      mig.textContent = `SALA ${sala.Codigo} / RESERVA`; sSala.textContent = 'Sala ' + sala.Codigo; sLoc.textContent = `Bloco ${sala.Bloco} • ${sala.Andar}º andar • ${sala.Campus}`;
+      pessoas.max = sala.Capacidade; pessoas.value = qs.get('pessoas') || 1; volta.href = '/sala.html?' + qs;
+      cal(); slots(); resumo();
+    })();
+  </script>
+</body>
+
+</html>

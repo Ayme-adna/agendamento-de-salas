@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Detalhes da sala</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <main>
+    <a href="/salas.html">← Consulta de sala</a>
+    <h1 id="tit"></h1>
+    <p class="mu" id="loc"></p>
+    <div class="duas">
+      <div>
+        <img class="foto" id="img" style="height:320px" alt="">
+        <div class="card"><b>Capacidade:</b> <span id="cap"></span> &nbsp; <b>Tipo:</b> Estudo em grupo &nbsp;
+          <b>Acessibilidade:</b> Acesso por elevador
+          <h3>Tudo para o seu grupo render.</h3>
+          <p id="desc"></p>
+          <p class="mu" id="rec"></p>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h3>Seu espaço está disponível</h3>
+          <p class="mu">Confira o período e continue para reservar.</p>
+          <div class="card" style="background:#eef3ff"><small>Data</small><br><b id="d"></b><br><br><small>Horário • 2
+              horas</small><br><b id="h"></b></div>
+          <p>Seu grupo: <b id="g"></b> pessoas</p><a class="btn full" id="ir">→ Reservar esta sala</a>
+        </div>
+        <div class="card" style="background:#edf0f6"><b>Antes de reservar</b>
+          <ul>
+            <li>Você pode reservar até 2 horas por dia.</li>
+            <li>Chegue em até 15 minutos após o início.</li>
+            <li>Mantenha a sala organizada ao sair.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    header('b');
+    (async () => {
+      const id = qs.get('id'), data = qs.get('data') || hoje, hora = +qs.get('hora') || 14, pes = qs.get('pessoas') || 1;
+      const s = await api('/api/salas/' + id);
+      tit.textContent = 'Sala ' + s.Codigo; loc.textContent = `Bloco ${s.Bloco} • ${s.Andar}º andar • ${s.Campus}`;
+      img.src = '/img/' + s.Imagem; cap.textContent = 'Até ' + s.Capacidade + ' pessoas'; desc.textContent = s.Descricao; rec.textContent = s.Recursos;
+      d.textContent = data.split('-').reverse().join('/'); h.textContent = `${hora}:00 às ${hora + 2}:00`; g.textContent = pes;
+      ir.href = '/reserva.html?' + new URLSearchParams({ id, data, hora, pessoas: pes });
+    })();
+  </script>
+</body>
+
+</html>

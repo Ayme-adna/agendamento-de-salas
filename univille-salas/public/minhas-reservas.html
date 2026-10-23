@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Minhas reservas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <main>
+    <h1>Minhas reservas</h1>
+    <div id="lista"></div>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    header('m');
+    async function carrega() {
+      const l = await api('/api/reservas');
+      lista.innerHTML = l.map(r => `<div class="card row"><div style="flex:3"><b>Sala ${r.Sala}</b> — ${r.Codigo}<br><span class="mu">${r.Data.split('-').reverse().join('/')} • ${r.HoraInicio}:00 às ${r.HoraInicio + 2}:00 • ${r.Pessoas} pessoas<br>${r.Finalidade || ''}</span></div>
+  <div><span class="tag" ${r.Status == 'Cancelada' ? 'style="background:#f6dcdc;color:#a33"' : ''}>${r.Status}</span></div>
+  <div>${r.Status == 'Confirmada' && r.Data >= hoje ? `<button class="btn out" onclick="cancelar(${r.Id})">Cancelar</button>` : ''}</div></div>`).join('') || '<p>Você ainda não tem reservas.</p>';
+    }
+    async function cancelar(i) { if (confirm('Cancelar esta reserva?')) { await api('/api/reservas/' + i, { method: 'DELETE' }); carrega() } }
+    carrega();
+  </script>
+</body>
+
+</html>

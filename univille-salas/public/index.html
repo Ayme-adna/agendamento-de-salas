@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .split {
+      display: flex;
+      min-height: 100vh
+    }
+
+    .lado {
+      flex: 1;
+      background: #3b4a2f;
+      color: #f0f4ec;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 30px;
+      letter-spacing: 6px;
+      text-align: center;
+      padding: 30px
+    }
+
+    .lado em {
+      font-family: Georgia, serif;
+      font-size: 56px;
+      color: #8fc17f;
+      letter-spacing: 0
+    }
+
+    .form {
+      flex: 1;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .form form {
+      width: 370px
+    }
+
+    .abas {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 10px
+    }
+
+    .abas a {
+      cursor: pointer;
+      color: var(--mu);
+      padding-bottom: 4px
+    }
+
+    .abas a.on {
+      color: var(--g);
+      font-weight: 700;
+      border-bottom: 2px solid var(--g)
+    }
+
+    @media(max-width:800px) {
+      .lado {
+        display: none
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="split">
+    <div class="lado"><b class="logo" style="font-size:22px;letter-spacing:0;margin-bottom:60px">univille</b>A
+      PRÓXIMA<em>resposta</em>PODE SER<br>A SUA.</div>
+    <div class="form">
+      <form id="fLogin">
+        <small>PORTAL DO ESTUDANTE</small>
+        <h1>Bom ter você por aqui.</h1>
+        <div class="abas"><a class="on">Entrar</a><a onclick="troca(1)">Cadastrar-se</a></div>
+        <label>E-mail institucional ou matrícula</label><input id="login" required>
+        <label>Senha</label><input id="senha" type="password" required>
+        <p><label style="font-weight:400"><input type="checkbox" id="manter" checked> Manter conectado</label></p>
+        <button class="btn full">Entrar</button>
+        <div class="erro" id="e1"></div>
+      </form>
+      <form id="fCad" style="display:none">
+        <small>PORTAL DO ESTUDANTE</small>
+        <h1>Crie sua conta.</h1>
+        <div class="abas"><a onclick="troca(0)">Entrar</a><a class="on">Cadastrar-se</a></div>
+        <label>Nome completo</label><input id="nome" required>
+        <label>Matrícula ou e-mail institucional</label><input id="loginC" required>
+        <label>Senha (mín. 6 caracteres)</label><input id="senhaC" type="password" minlength="6" required>
+        <br><button class="btn full">Cadastrar</button>
+        <div class="erro" id="e2"></div>
+      </form>
+    </div>
+  </div>
+  <script src="app.js"></script>
+  <script>
+    function troca(c) { fLogin.style.display = c ? 'none' : ''; fCad.style.display = c ? '' : 'none' }
+    fLogin.onsubmit = async e => { e.preventDefault(); try { await api('/api/login', { method: 'POST', body: { login: login.value, senha: senha.value, manter: manter.checked } }); location = '/salas.html' } catch (x) { e1.textContent = x.erro || 'Erro ao entrar.' } };
+    fCad.onsubmit = async e => { e.preventDefault(); try { await api('/api/cadastro', { method: 'POST', body: { nome: nome.value, login: loginC.value, senha: senhaC.value } }); alert('Cadastro realizado! Faça login.'); login.value = loginC.value; troca(0) } catch (x) { e2.textContent = x.erro || 'Erro no cadastro.' } };
+  </script>
+</body>
+
+</html>
