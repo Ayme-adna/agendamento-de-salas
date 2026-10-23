@@ -16,7 +16,5 @@ A aplicação tem como objetivo facilitar o gerenciamento de salas, permitindo c
 A proposta busca otimizar a utilização dos ambientes, melhorar a organização dos horários e evitar conflitos de agendamento.
 
 🎯 Objetivos
-📅 Facilitar a consulta de disponibilidade das salas.
-🏢 Organizar o gerenciamento e a reserva de espaços.
-⏰ Evitar conflitos entre agendamentos.
-✅ Tornar o processo de reserva mais simples e eficiente.
+
+📅 Facilitar a consulta de disponibilidade das salas.<br> 🏢 Organizar o gerenciamento e a reserva de espaços.<br> ⏰ Evitar conflitos entre agendamentos.<br> ✅ Tornar o processo de reserva mais simples e eficiente.
