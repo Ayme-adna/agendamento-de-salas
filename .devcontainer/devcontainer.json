@@ -1,0 +1,17 @@
+{
+  // Abre o SalaFácil no GitHub Codespaces, pronto para apresentar (banco SQLite com dados de exemplo).
+  "name": "SalaFácil",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" }
+  },
+  // Primeira vez: extrai o projeto do zip, instala as dependências e cria o banco.
+  "postCreateCommand": "bash .devcontainer/preparar.sh",
+  // Toda vez que o Codespace liga: sobe a API e as telas.
+  "postStartCommand": "bash .devcontainer/iniciar.sh",
+  "forwardPorts": [5173],
+  "portsAttributes": {
+    "5173": { "label": "SalaFácil", "onAutoForward": "openBrowser" },
+    "8000": { "label": "API (interna)", "onAutoForward": "silent" }
+  }
+}
